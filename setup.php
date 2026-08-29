@@ -49,8 +49,9 @@ try {
     )");
     echo "✅ Tickets table created\n";
 
-    // Create winners table
-    $pdo->exec("CREATE TABLE IF NOT EXISTS winners (
+    // Create winners table (drop old one if exists with wrong schema)
+    $pdo->exec("DROP TABLE IF EXISTS winners");
+    $pdo->exec("CREATE TABLE winners (
         id INT AUTO_INCREMENT PRIMARY KEY,
         ticket_code VARCHAR(12) NOT NULL,
         full_name VARCHAR(255) NOT NULL,
