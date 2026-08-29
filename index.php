@@ -94,7 +94,11 @@
                     <img src="assets/images/ticket-back.png" alt="OLC Ticket Back" class="card-bg-img">
                 </div>
             </div>
-            <button id="flipBtn" class="btn-neon btn-cyan flip-btn">↻ FLIP CARD</button>
+            <div class="card-buttons">
+                <button id="flipBtn" class="btn-neon btn-cyan flip-btn">↻ FLIP</button>
+                <button id="revealBtn" class="btn-neon btn-gold flip-btn">👁 REVEAL</button>
+                <button id="nextBtn" class="btn-neon btn-red flip-btn">→ NEXT</button>
+            </div>
         </div>
     </section>
 

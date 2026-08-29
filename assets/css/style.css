@@ -499,10 +499,20 @@ body {
     cursor: crosshair;
 }
 
-.flip-btn {
+.card-buttons {
+    display: flex;
+    gap: 10px;
     margin-top: 20px;
-    font-size: 0.8rem;
-    padding: 10px 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.flip-btn {
+    font-size: 0.75rem;
+    padding: 10px 18px;
+    flex: 1;
+    min-width: 90px;
+    max-width: 130px;
 }
 
 /* --- RESULT POPUP --- */

@@ -17,6 +17,8 @@
     const codeMessage = document.getElementById('codeMessage');
     const flipCard = document.getElementById('flipCard');
     const flipBtn = document.getElementById('flipBtn');
+    const revealBtn = document.getElementById('revealBtn');
+    const nextBtn = document.getElementById('nextBtn');
     const lockOverlay = document.getElementById('lockOverlay');
     const scratchCanvas = document.getElementById('scratchCanvas');
     const winnerForm = document.getElementById('winnerForm');
@@ -84,6 +86,17 @@
     flipCard.addEventListener('click', function(e) {
         if (e.target === scratchCanvas && isUnlocked) return;
         flipBtn.click();
+    });
+
+    // ===== REVEAL BUTTON =====
+    revealBtn.addEventListener('click', function() {
+        if (!isUnlocked || revealed) return;
+        revealPrize();
+    });
+
+    // ===== NEXT BUTTON =====
+    nextBtn.addEventListener('click', function() {
+        resetForNextTicket();
     });
 
     // ===== CODE VALIDATION =====
