@@ -534,10 +534,61 @@ body {
     text-align: center;
     transform: scale(0.8) translateY(20px);
     transition: transform 0.3s ease;
+    position: relative;
+    overflow: visible;
 }
 
 .result-overlay.active .result-modal {
     transform: scale(1) translateY(0);
+}
+
+/* Winner animation */
+.result-win {
+    animation: winPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes winPop {
+    0% { transform: scale(0.3) rotate(-5deg); opacity: 0; }
+    50% { transform: scale(1.1) rotate(2deg); }
+    70% { transform: scale(0.95) rotate(-1deg); }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+/* Lose animation */
+.result-lose {
+    animation: loseSlide 0.5s ease-out;
+}
+
+@keyframes loseSlide {
+    0% { transform: translateY(-30px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Winner emoji bounce */
+.result-win .result-emoji {
+    animation: emojiBounce 0.8s ease infinite alternate;
+}
+
+@keyframes emojiBounce {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.2); }
+}
+
+/* Confetti for winners */
+.result-win::before {
+    content: '🎊🎉✨🎉🎊';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5rem;
+    letter-spacing: 8px;
+    animation: confettiDrop 1s ease-out;
+}
+
+@keyframes confettiDrop {
+    0% { transform: translateX(-50%) translateY(-40px); opacity: 0; }
+    100% { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
 
 .result-win {

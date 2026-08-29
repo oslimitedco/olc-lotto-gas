@@ -254,7 +254,7 @@
 
         scratchPercentage = (transparent / total) * 100;
 
-        if (scratchPercentage > 40) {
+        if (scratchPercentage > 15) {
             revealPrize();
         }
     }
