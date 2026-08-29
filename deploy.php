@@ -15,7 +15,7 @@ echo "h1{color:#F8C959;} .ok{color:#4DF8F2;} .err{color:#D64D4D;} pre{background
 echo "<h1>⛽ OLC Lotto Gas — Deploy Script</h1><pre>";
 
 $baseDir = __DIR__;
-$zipUrl = 'https://github.com/oslimitedco/olc-lotto-gas/archive/refs/heads/main.zip';
+$zipUrl = 'https://github.com/oslimitedco/olc-lotto-gas/archive/refs/heads/main.zip?t=' . time();
 $zipFile = $baseDir . '/olc-deploy.zip';
 $extractDir = $baseDir . '/olc-extract';
 
