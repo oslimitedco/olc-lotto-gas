@@ -98,14 +98,6 @@
         </div>
     </section>
 
-    <!-- PRIZE REVEAL -->
-    <div id="prizeReveal" class="prize-reveal hidden">
-        <div class="prize-content">
-            <h2>🎉 CONGRATULATIONS!</h2>
-            <p id="prizeText" class="prize-text"></p>
-        </div>
-    </div>
-
     <!-- WINNER FORM (shown on grand prize) -->
     <section id="winnerForm" class="winner-form-section hidden">
         <div class="winner-form-box">

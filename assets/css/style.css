@@ -505,40 +505,103 @@ body {
     padding: 10px 24px;
 }
 
-/* --- PRIZE REVEAL --- */
-.prize-reveal {
-    position: relative;
-    z-index: 10;
+/* --- RESULT POPUP --- */
+.result-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 20px;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.result-overlay.active {
+    background: rgba(0,0,0,0.85);
+    opacity: 1;
+}
+
+.result-modal {
+    background: var(--bg-navy);
+    border-radius: 24px;
+    padding: 40px 30px;
+    max-width: 380px;
+    width: 100%;
     text-align: center;
+    transform: scale(0.8) translateY(20px);
+    transition: transform 0.3s ease;
 }
 
-.prize-content {
-    background: rgba(248,201,89,0.1);
+.result-overlay.active .result-modal {
+    transform: scale(1) translateY(0);
+}
+
+.result-win {
     border: 2px solid var(--neon-gold);
-    border-radius: 20px;
-    padding: 30px 20px;
-    max-width: 400px;
-    margin: 0 auto;
-    box-shadow: 0 0 40px rgba(248,201,89,0.2);
-    animation: prizeGlow 1.5s ease-in-out infinite alternate;
+    box-shadow: 0 0 40px rgba(248,201,89,0.3), 0 0 80px rgba(248,201,89,0.1);
 }
 
-@keyframes prizeGlow {
-    0% { box-shadow: 0 0 20px rgba(248,201,89,0.2); }
-    100% { box-shadow: 0 0 50px rgba(248,201,89,0.5); }
+.result-lose {
+    border: 1px solid rgba(77,248,242,0.2);
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
 }
 
-.prize-content h2 {
+.result-emoji {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+}
+
+.result-title {
     font-family: 'Orbitron', monospace;
-    color: var(--neon-gold);
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     margin-bottom: 10px;
 }
 
-.prize-text {
-    font-size: 1.2rem;
+.result-win .result-title {
+    color: var(--neon-gold);
+    text-shadow: 0 0 20px rgba(248,201,89,0.5);
+}
+
+.result-lose .result-title {
+    color: var(--neon-cyan);
+}
+
+.result-prize {
+    font-size: 1.4rem;
+    font-weight: 700;
     color: var(--white);
+    margin-bottom: 8px;
+}
+
+.result-sub {
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin-bottom: 25px;
+}
+
+.result-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.result-buttons .btn-neon {
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 14px;
+}
+
+.result-claim-btn {
+    animation: claimPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes claimPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(248,201,89,0.4); }
+    50% { box-shadow: 0 0 40px rgba(248,201,89,0.7); }
 }
 
 /* --- WINNER FORM --- */

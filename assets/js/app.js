@@ -19,8 +19,6 @@
     const flipBtn = document.getElementById('flipBtn');
     const lockOverlay = document.getElementById('lockOverlay');
     const scratchCanvas = document.getElementById('scratchCanvas');
-    const prizeReveal = document.getElementById('prizeReveal');
-    const prizeText = document.getElementById('prizeText');
     const winnerForm = document.getElementById('winnerForm');
     const winnerFormEl = document.getElementById('winnerFormEl');
     const winnerMessage = document.getElementById('winnerMessage');
@@ -35,21 +33,21 @@
     let scratchPercentage = 0;
     let ctx = null;
     let currentTicketCode = '';
+    let revealed = false;
 
     // ===== PRIZE POOL =====
     const PRIZES = [
-        { text: '$750 Cash Prize!', grand: true },
-        { text: 'HP Laptop!', grand: true },
-        { text: '$100 Gas Card', grand: false },
-        { text: '$50 Gas Card', grand: false },
-        { text: '$25 Gas Card', grand: false },
-        { text: 'Free Car Wash', grand: false },
-        { text: 'Better Luck Next Time', grand: false },
-        { text: 'Try Again', grand: false },
+        { text: '$750 Cash Prize!', grand: true, emoji: '💰' },
+        { text: 'HP Laptop!', grand: true, emoji: '💻' },
+        { text: '$100 Gas Card', grand: false, emoji: '⛽' },
+        { text: '$50 Gas Card', grand: false, emoji: '⛽' },
+        { text: '$25 Gas Card', grand: false, emoji: '⛽' },
+        { text: 'Free Car Wash', grand: false, emoji: '🚗' },
+        { text: 'Better Luck Next Time', grand: false, emoji: '🤞' },
+        { text: 'Try Again', grand: false, emoji: '🔄' },
     ];
 
     // Weighted odds (1 in 3.5 overall win rate)
-    // ~28.5% chance of winning something
     function pickPrize() {
         const rand = Math.random();
         if (rand < 0.02) return PRIZES[0];      // 2% - $750
@@ -76,7 +74,6 @@
         underAge.classList.remove('hidden');
     });
 
-    // Check if already verified
     if (sessionStorage.getItem('ageVerified') === 'true') {
         ageGate.classList.add('hidden');
         mainContent.classList.remove('hidden');
@@ -94,9 +91,8 @@
         }
     });
 
-    // Also flip on card tap/click
     flipCard.addEventListener('click', function(e) {
-        if (e.target === scratchCanvas && isUnlocked) return; // Don't flip while scratching
+        if (e.target === scratchCanvas && isUnlocked) return;
         flipBtn.click();
     });
 
@@ -106,7 +102,6 @@
         if (e.key === 'Enter') validateCode();
     });
 
-    // Auto-format code input
     ticketCode.addEventListener('input', function() {
         this.value = this.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
     });
@@ -134,7 +129,7 @@
             if (data.valid) {
                 currentTicketCode = code;
                 unlockCard(data);
-                showMessage(`✅ Code accepted! Tier: ${data.tier.replace('_', ' $')} — ${data.ticket_count} ticket(s)`, 'success');
+                showMessage('✅ Code accepted! Scratch your ticket!', 'success');
             } else {
                 showMessage(data.error || 'Invalid code', 'error');
             }
@@ -154,6 +149,7 @@
     // ===== UNLOCK CARD =====
     function unlockCard(data) {
         isUnlocked = true;
+        revealed = false;
 
         // Remove lock overlay
         lockOverlay.classList.add('unlocked');
@@ -171,7 +167,7 @@
         }
 
         // Initialize scratch canvas
-        initScratchCanvas();
+        setTimeout(initScratchCanvas, 300);
     }
 
     // ===== SCRATCH CANVAS =====
@@ -179,33 +175,30 @@
         ctx = scratchCanvas.getContext('2d');
         resizeCanvas();
 
-        // Fill with scratch-off coating
-        const gradient = ctx.createLinearGradient(0, 0, scratchCanvas.width, scratchCanvas.height);
-        gradient.addColorStop(0, '#b8956a');
-        gradient.addColorStop(0.5, '#d4b896');
-        gradient.addColorStop(1, '#a07848');
-        ctx.fillStyle = gradient;
+        // Fill with 100% opaque scratch-off coating
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = '#c4a265';
         ctx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
 
-        // Add scratch texture dots
-        ctx.fillStyle = 'rgba(0,0,0,0.08)';
-        for (let i = 0; i < 500; i++) {
+        // Add subtle texture
+        ctx.fillStyle = 'rgba(160,120,72,0.3)';
+        for (let i = 0; i < 300; i++) {
             const x = Math.random() * scratchCanvas.width;
             const y = Math.random() * scratchCanvas.height;
             ctx.beginPath();
-            ctx.arc(x, y, Math.random() * 2, 0, Math.PI * 2);
+            ctx.arc(x, y, Math.random() * 3, 0, Math.PI * 2);
             ctx.fill();
         }
 
         // Draw "SCRATCH HERE" text
-        ctx.fillStyle = 'rgba(0,0,0,0.2)';
-        ctx.font = 'bold 18px Orbitron, monospace';
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.font = 'bold 20px Orbitron, monospace';
         ctx.textAlign = 'center';
         ctx.fillText('SCRATCH HERE', scratchCanvas.width / 2, scratchCanvas.height / 2 - 10);
-        ctx.font = '12px Inter, sans-serif';
+        ctx.font = '13px Inter, sans-serif';
         ctx.fillText('Reveal your prize!', scratchCanvas.width / 2, scratchCanvas.height / 2 + 15);
 
-        // Set composite for scratching
+        // Set composite for scratching (erases to transparent)
         ctx.globalCompositeOperation = 'destination-out';
 
         // Event listeners
@@ -219,13 +212,11 @@
     }
 
     function resizeCanvas() {
-        const rect = scratchCanvas.parentElement.getBoundingClientRect();
-        // Use offsetWidth/Height for better iOS compatibility
-        const w = rect.width || scratchCanvas.parentElement.offsetWidth;
-        const h = rect.height || scratchCanvas.parentElement.offsetHeight;
+        const parent = scratchCanvas.parentElement;
+        const w = parent.offsetWidth || parent.getBoundingClientRect().width;
+        const h = parent.offsetHeight || parent.getBoundingClientRect().height;
         scratchCanvas.width = w;
         scratchCanvas.height = h;
-        // Set CSS size explicitly for iOS
         scratchCanvas.style.width = w + 'px';
         scratchCanvas.style.height = h + 'px';
     }
@@ -233,7 +224,6 @@
     function getPos(e) {
         const rect = scratchCanvas.getBoundingClientRect();
         const touch = e.touches ? e.touches[0] : e;
-        // Scale coordinates for canvas resolution
         const scaleX = scratchCanvas.width / rect.width;
         const scaleY = scratchCanvas.height / rect.height;
         return {
@@ -243,7 +233,7 @@
     }
 
     function startScratch(e) {
-        if (!isUnlocked) return;
+        if (!isUnlocked || revealed) return;
         e.preventDefault();
         isScratching = true;
         const pos = getPos(e);
@@ -253,7 +243,7 @@
     }
 
     function scratch(e) {
-        if (!isScratching || !isUnlocked) return;
+        if (!isScratching || !isUnlocked || revealed) return;
         e.preventDefault();
         const pos = getPos(e);
         ctx.beginPath();
@@ -264,10 +254,11 @@
 
     function endScratch() {
         isScratching = false;
-        checkScratchProgress();
+        if (!revealed) checkScratchProgress();
     }
 
     function checkScratchProgress() {
+        if (revealed) return;
         const imageData = ctx.getImageData(0, 0, scratchCanvas.width, scratchCanvas.height);
         const pixels = imageData.data;
         let transparent = 0;
@@ -286,26 +277,15 @@
     }
 
     function revealPrize() {
-        // Remove canvas entirely
-        scratchCanvas.style.transition = 'opacity 0.5s';
+        if (revealed) return;
+        revealed = true;
+
+        // Remove canvas
+        scratchCanvas.style.transition = 'opacity 0.4s';
         scratchCanvas.style.opacity = '0';
         setTimeout(() => {
             scratchCanvas.style.display = 'none';
-        }, 500);
-
-        // Show prize
-        prizeReveal.classList.remove('hidden');
-        prizeText.textContent = currentPrize.text;
-
-        // If grand prize, show winner form
-        if (currentPrize.grand) {
-            setTimeout(() => {
-                winnerForm.classList.remove('hidden');
-                document.getElementById('winnerTicketCode').value = currentTicketCode;
-                document.getElementById('winnerPrize').value = currentPrize.text;
-                winnerForm.scrollIntoView({ behavior: 'smooth' });
-            }, 1500);
-        }
+        }, 400);
 
         // Remove event listeners
         scratchCanvas.removeEventListener('mousedown', startScratch);
@@ -314,6 +294,97 @@
         scratchCanvas.removeEventListener('touchstart', startScratch);
         scratchCanvas.removeEventListener('touchmove', scratch);
         scratchCanvas.removeEventListener('touchend', endScratch);
+
+        // Show result popup after canvas fades
+        setTimeout(showResultPopup, 500);
+    }
+
+    // ===== RESULT POPUP =====
+    function showResultPopup() {
+        const isWinner = currentPrize.grand || !currentPrize.text.includes('Try Again') && !currentPrize.text.includes('Better Luck');
+
+        // Create popup overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'result-overlay';
+        overlay.innerHTML = `
+            <div class="result-modal ${isWinner ? 'result-win' : 'result-lose'}">
+                <div class="result-emoji">${currentPrize.emoji}</div>
+                <h2 class="result-title">${isWinner ? '🎉 CONGRATULATIONS!' : '😔 NOT THIS TIME'}</h2>
+                <p class="result-prize">${currentPrize.text}</p>
+                ${isWinner && currentPrize.grand ? '<p class="result-sub">Fill out the form below to claim your prize!</p>' : ''}
+                ${!isWinner ? '<p class="result-sub">Better luck on your next scratch!</p>' : ''}
+                <div class="result-buttons">
+                    ${isWinner && currentPrize.grand ? '<button class="btn-neon btn-gold result-claim-btn">CLAIM PRIZE</button>' : ''}
+                    <button class="btn-neon btn-cyan result-next-btn">NEXT TICKET</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // Animate in
+        setTimeout(() => overlay.classList.add('active'), 10);
+
+        // Button handlers
+        const claimBtn = overlay.querySelector('.result-claim-btn');
+        const nextBtn = overlay.querySelector('.result-next-btn');
+
+        if (claimBtn) {
+            claimBtn.addEventListener('click', function() {
+                overlay.classList.remove('active');
+                setTimeout(() => {
+                    overlay.remove();
+                    // Show winner form
+                    winnerForm.classList.remove('hidden');
+                    document.getElementById('winnerTicketCode').value = currentTicketCode;
+                    document.getElementById('winnerPrize').value = currentPrize.text;
+                    winnerForm.scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            });
+        }
+
+        nextBtn.addEventListener('click', function() {
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                overlay.remove();
+                resetForNextTicket();
+            }, 300);
+        });
+    }
+
+    function resetForNextTicket() {
+        // Reset card state
+        isUnlocked = false;
+        isFlipped = false;
+        revealed = false;
+        currentPrize = null;
+        currentTicketCode = '';
+        scratchPercentage = 0;
+
+        // Reset card flip
+        flipCard.classList.remove('flipped');
+        flipBtn.textContent = '↻ FLIP CARD';
+
+        // Reset lock overlay
+        lockOverlay.classList.remove('unlocked');
+
+        // Reset canvas
+        scratchCanvas.style.display = '';
+        scratchCanvas.style.opacity = '';
+        scratchCanvas.classList.remove('unlocked');
+        scratchCanvas.classList.add('locked');
+
+        // Clear code input
+        ticketCode.value = '';
+        codeMessage.textContent = '';
+        codeMessage.className = 'code-message';
+
+        // Hide winner form
+        winnerForm.classList.add('hidden');
+        winnerMessage.textContent = '';
+
+        // Scroll to code section
+        document.getElementById('codeSection').scrollIntoView({ behavior: 'smooth' });
     }
 
     // ===== WINNER FORM SUBMISSION =====
@@ -372,13 +443,6 @@
     infoModal.addEventListener('click', function(e) {
         if (e.target === infoModal) {
             infoModal.classList.add('hidden');
-        }
-    });
-
-    // ===== RESIZE HANDLER =====
-    window.addEventListener('resize', function() {
-        if (ctx && isUnlocked) {
-            // Don't resize if already scratched — would lose progress
         }
     });
 
