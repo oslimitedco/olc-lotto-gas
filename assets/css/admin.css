@@ -1,0 +1,340 @@
+/* ========================================
+   OLC Admin Dashboard Styles
+   ======================================== */
+
+*, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+}
+
+:root {
+    --bg-dark: #0a0a0f;
+    --bg-navy: #1f2533;
+    --neon-red: #D64D4D;
+    --neon-cyan: #4DF8F2;
+    --neon-gold: #F8C959;
+    --white: #FFFFFF;
+    --gray: #888;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-dark);
+    color: var(--white);
+    min-height: 100vh;
+}
+
+/* --- LOGIN PAGE --- */
+.admin-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.login-box {
+    background: var(--bg-navy);
+    border: 1px solid rgba(77,248,242,0.2);
+    border-radius: 20px;
+    padding: 40px 30px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.login-box h1 {
+    font-size: 1.5rem;
+    color: var(--neon-gold);
+    margin-bottom: 5px;
+}
+
+.login-box > p {
+    color: var(--gray);
+    font-size: 0.85rem;
+    margin-bottom: 25px;
+}
+
+.error-msg {
+    background: rgba(214,77,77,0.15);
+    border: 1px solid var(--neon-red);
+    border-radius: 8px;
+    padding: 10px;
+    color: var(--neon-red);
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--neon-cyan);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(77,248,242,0.2);
+    border-radius: 10px;
+    color: var(--white);
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: var(--neon-cyan);
+}
+
+.btn-login {
+    width: 100%;
+    padding: 14px;
+    background: var(--neon-gold);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s;
+}
+
+.btn-login:hover {
+    box-shadow: 0 0 30px rgba(248,201,89,0.5);
+}
+
+/* --- DASHBOARD --- */
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(77,248,242,0.1);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.admin-header h1 {
+    font-size: 1.1rem;
+    color: var(--neon-gold);
+}
+
+.btn-logout {
+    padding: 8px 18px;
+    background: var(--neon-red);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-logout:hover {
+    box-shadow: 0 0 20px rgba(214,77,77,0.5);
+}
+
+.alert {
+    margin: 15px 25px;
+    padding: 14px 18px;
+    background: rgba(77,248,242,0.1);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    padding: 20px 25px;
+}
+
+.stat-card {
+    background: var(--bg-navy);
+    border: 1px solid rgba(77,248,242,0.1);
+    border-radius: 12px;
+    padding: 20px 15px;
+    text-align: center;
+}
+
+.stat-num {
+    display: block;
+    font-family: 'Orbitron', monospace;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--neon-cyan);
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--gray);
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-card.active .stat-num { color: var(--neon-cyan); }
+.stat-card.used .stat-num { color: var(--neon-gold); }
+.stat-card.expired .stat-num { color: var(--neon-red); }
+.stat-card.winners .stat-num { color: #43E96B; }
+
+/* Panels */
+.panel {
+    margin: 20px 25px;
+    background: var(--bg-navy);
+    border: 1px solid rgba(77,248,242,0.1);
+    border-radius: 16px;
+    padding: 25px;
+}
+
+.panel h2 {
+    font-size: 1.1rem;
+    color: var(--neon-gold);
+    margin-bottom: 20px;
+}
+
+/* Generate Form */
+.gen-form .form-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.gen-form .form-group {
+    flex: 1;
+    min-width: 150px;
+}
+
+.btn-generate {
+    padding: 12px 24px;
+    background: var(--neon-gold);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.btn-generate:hover {
+    box-shadow: 0 0 25px rgba(248,201,89,0.5);
+}
+
+/* Tables */
+.table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+th {
+    text-align: left;
+    padding: 10px 12px;
+    color: var(--neon-cyan);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(77,248,242,0.15);
+    white-space: nowrap;
+}
+
+td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    white-space: nowrap;
+}
+
+tr:hover {
+    background: rgba(77,248,242,0.03);
+}
+
+.code-cell {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: var(--neon-gold);
+    letter-spacing: 1px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-active {
+    background: rgba(77,248,242,0.15);
+    color: var(--neon-cyan);
+}
+
+.badge-used {
+    background: rgba(248,201,89,0.15);
+    color: var(--neon-gold);
+}
+
+.badge-expired {
+    background: rgba(214,77,77,0.15);
+    color: var(--neon-red);
+}
+
+.btn-expire {
+    padding: 5px 12px;
+    background: rgba(214,77,77,0.2);
+    color: var(--neon-red);
+    border: 1px solid var(--neon-red);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-expire:hover {
+    background: var(--neon-red);
+    color: var(--white);
+}
+
+.no-data {
+    color: var(--gray);
+    text-align: center;
+    padding: 30px;
+    font-style: italic;
+}
+
+.admin-footer {
+    text-align: center;
+    padding: 25px;
+    color: var(--gray);
+    font-size: 0.75rem;
+    border-top: 1px solid rgba(77,248,242,0.05);
+    margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .admin-header { padding: 15px; }
+    .admin-header h1 { font-size: 0.95rem; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); padding: 15px; }
+    .panel { margin: 15px; padding: 18px; }
+    .stat-num { font-size: 1.4rem; }
+}
