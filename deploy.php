@@ -19,6 +19,9 @@ $zipUrl = 'https://github.com/oslimitedco/olc-lotto-gas/archive/refs/heads/main.
 $zipFile = $baseDir . '/olc-deploy.zip';
 $extractDir = $baseDir . '/olc-extract';
 
+// Files to NEVER overwrite if they already exist on server
+$skipFiles = ['config/db.php'];
+
 // Step 1: Download
 echo "📥 Downloading from GitHub...\n";
 $zip = @file_get_contents($zipUrl);
@@ -70,23 +73,22 @@ if (!$subfolder || !is_dir($subfolder)) {
 
 echo "  Found subfolder: " . basename($subfolder) . "\n";
 
-// Recursive copy function
-function recursiveCopy($src, $dst) {
+// Recursive copy function — tracks base dir for correct relative paths
+function recursiveCopy($src, $dst, $baseSrc, $skipFiles) {
     $count = 0;
     $dir = opendir($src);
     if (!is_dir($dst)) mkdir($dst, 0755, true);
-    // Files to skip (don't overwrite if already exists)
-    $skipFiles = ['config/db.php'];
     while (($file = readdir($dir)) !== false) {
         if ($file === '.' || $file === '..') continue;
         $srcPath = $src . '/' . $file;
         $dstPath = $dst . '/' . $file;
         if (is_dir($srcPath)) {
-            $count += recursiveCopy($srcPath, $dstPath);
+            $count += recursiveCopy($srcPath, $dstPath, $baseSrc, $skipFiles);
         } else {
-            // Skip config/db.php if it already exists on server
-            $relativePath = str_replace($src . '/', '', $srcPath);
+            // Compute path relative to the base source directory
+            $relativePath = str_replace($baseSrc . '/', '', $srcPath);
             if (in_array($relativePath, $skipFiles) && file_exists($dstPath)) {
+                echo "  ⏭️ Skipped: $relativePath (preserved)\n";
                 continue;
             }
             copy($srcPath, $dstPath);
@@ -97,7 +99,7 @@ function recursiveCopy($src, $dst) {
     return $count;
 }
 
-$moved = recursiveCopy($subfolder, $baseDir);
+$moved = recursiveCopy($subfolder, $baseDir, $subfolder, $skipFiles);
 echo "<span class='ok'>✅ Moved $moved files</span>\n\n";
 
 // Step 4: Cleanup
@@ -136,9 +138,8 @@ if ($allGood) {
     echo "<span class='ok'>🎉 Deployment complete!</span>\n";
     echo "\n";
     echo "Next steps:\n";
-    echo "1. Edit <b>config/db.php</b> with your MySQL credentials\n";
-    echo "2. Visit <a href='setup.php' style='color:#F8C959;'>setup.php</a> to initialize the database\n";
-    echo "3. <b>DELETE this deploy.php file!</b>\n";
+    echo "1. Visit <a href='setup.php' style='color:#F8C959;'>setup.php</a> to initialize the database\n";
+    echo "2. <b>DELETE this deploy.php file!</b>\n";
     echo "\n";
     echo "Visit your site: <a href='/' style='color:#4DF8F2;'>https://oslimitedco.com</a>\n";
 } else {
