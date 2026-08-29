@@ -75,6 +75,8 @@ function recursiveCopy($src, $dst) {
     $count = 0;
     $dir = opendir($src);
     if (!is_dir($dst)) mkdir($dst, 0755, true);
+    // Files to skip (don't overwrite if already exists)
+    $skipFiles = ['config/db.php'];
     while (($file = readdir($dir)) !== false) {
         if ($file === '.' || $file === '..') continue;
         $srcPath = $src . '/' . $file;
@@ -82,6 +84,11 @@ function recursiveCopy($src, $dst) {
         if (is_dir($srcPath)) {
             $count += recursiveCopy($srcPath, $dstPath);
         } else {
+            // Skip config/db.php if it already exists on server
+            $relativePath = str_replace($src . '/', '', $srcPath);
+            if (in_array($relativePath, $skipFiles) && file_exists($dstPath)) {
+                continue;
+            }
             copy($srcPath, $dstPath);
             $count++;
         }
