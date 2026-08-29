@@ -375,14 +375,13 @@ body {
 .card-container {
     perspective: 1200px;
     width: 100%;
-    max-width: 360px;
+    max-width: 420px;
     margin: 0 auto;
 }
 
 .flip-card {
     width: 100%;
-    max-width: 340px;
-    aspect-ratio: 2.5/4;
+    aspect-ratio: 1071/803;
     position: relative;
     transform-style: preserve-3d;
     transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
