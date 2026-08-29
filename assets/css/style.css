@@ -382,6 +382,7 @@ body {
     width: 100%;
     max-width: 420px;
     margin: 0 auto;
+    padding: 0 15px;
 }
 
 .flip-card {
@@ -888,6 +889,19 @@ body {
     .social-btn { flex: 1; min-width: 200px; }
     .modal-box { padding: 50px 40px; }
     .site-title { font-size: 1.6rem; }
+    .card-container { max-width: 550px; }
+    .flip-card { max-width: 550px; }
+}
+
+@media (min-width: 1024px) {
+    .card-container { max-width: 650px; }
+    .flip-card { max-width: 650px; }
+    .card-section { padding: 40px 30px; }
+}
+
+@media (min-width: 1440px) {
+    .card-container { max-width: 750px; }
+    .flip-card { max-width: 750px; }
 }
 
 @media (max-width: 380px) {
