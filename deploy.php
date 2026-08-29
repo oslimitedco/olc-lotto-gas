@@ -2,7 +2,6 @@
 /**
  * OLC Lotto Gas — One-Click Deploy Script
  * Upload this single file to public_html and visit it in your browser.
- * It will download the code from GitHub and set everything up.
  * DELETE THIS FILE AFTER DEPLOYMENT.
  */
 
@@ -22,10 +21,19 @@ $extractDir = $baseDir . '/olc-extract';
 
 // Step 1: Download
 echo "📥 Downloading from GitHub...\n";
-$zip = file_get_contents($zipUrl);
+$zip = @file_get_contents($zipUrl);
 if ($zip === false) {
-    echo "<span class='err'>❌ Failed to download. Check if allow_url_fopen is enabled.</span>\n";
-    exit;
+    echo "<span class='err'>❌ Failed to download. Trying cURL...</span>\n";
+    $ch = curl_init($zipUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $zip = curl_exec($ch);
+    curl_close($ch);
+    if ($zip === false) {
+        echo "<span class='err'>❌ cURL also failed. Check server connectivity.</span>\n";
+        exit;
+    }
 }
 file_put_contents($zipFile, $zip);
 echo "<span class='ok'>✅ Downloaded (" . round(strlen($zip)/1024) . " KB)</span>\n\n";
@@ -42,35 +50,48 @@ if ($zipObj->open($zipFile) === true) {
     exit;
 }
 
-// Step 3: Move files to base directory
+// Step 3: Find the subfolder
 echo "📂 Moving files to public_html...\n";
-$subfolder = $extractDir . '/olc-lotto-gas-main';
-if (!is_dir($subfolder)) {
-    // Try other possible names
-    $dirs = glob($extractDir . '/*', GLOB_ONLYDIR);
-    $subfolder = !empty($dirs) ? $dirs[0] : null;
+$subfolder = null;
+$items = scandir($extractDir);
+foreach ($items as $item) {
+    if ($item === '.' || $item === '..') continue;
+    $path = $extractDir . '/' . $item;
+    if (is_dir($path)) {
+        $subfolder = $path;
+        break;
+    }
 }
 
-if ($subfolder && is_dir($subfolder)) {
-    $files = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($subfolder, RecursiveDirectoryIterator::SKIP_DOTS),
-        RecursiveIteratorIterator::SELF_FIRST
-    );
-    
-    $moved = 0;
-    foreach ($files as $file) {
-        $dest = $baseDir . '/' . $file->getSubPathname();
-        if ($file->isDir()) {
-            if (!is_dir($dest)) mkdir($dest, 0755, true);
+if (!$subfolder || !is_dir($subfolder)) {
+    echo "<span class='err'>❌ Could not find extracted subfolder</span>\n";
+    exit;
+}
+
+echo "  Found subfolder: " . basename($subfolder) . "\n";
+
+// Recursive copy function
+function recursiveCopy($src, $dst) {
+    $count = 0;
+    $dir = opendir($src);
+    if (!is_dir($dst)) mkdir($dst, 0755, true);
+    while (($file = readdir($dir)) !== false) {
+        if ($file === '.' || $file === '..') continue;
+        $srcPath = $src . '/' . $file;
+        $dstPath = $dst . '/' . $file;
+        if (is_dir($srcPath)) {
+            $count += recursiveCopy($srcPath, $dstPath);
         } else {
-            copy($file->getRealPath(), $dest);
-            $moved++;
+            copy($srcPath, $dstPath);
+            $count++;
         }
     }
-    echo "<span class='ok'>✅ Moved $moved files</span>\n\n";
-} else {
-    echo "<span class='err'>❌ Could not find extracted subfolder</span>\n";
+    closedir($dir);
+    return $count;
 }
+
+$moved = recursiveCopy($subfolder, $baseDir);
+echo "<span class='ok'>✅ Moved $moved files</span>\n\n";
 
 // Step 4: Cleanup
 echo "🧹 Cleaning up...\n";
@@ -90,11 +111,12 @@ echo "<span class='ok'>✅ Cleaned up temp files</span>\n\n";
 
 // Step 5: Check files
 echo "🔍 Verifying deployment...\n";
-$critical = ['index.php', 'config/db.php', 'assets/css/style.css', 'assets/js/app.js'];
+$critical = ['index.php', 'config/db.php', 'assets/css/style.css', 'assets/js/app.js', 'admin/login.php'];
 $allGood = true;
 foreach ($critical as $f) {
-    if (file_exists($baseDir . '/' . $f)) {
-        $size = filesize($baseDir . '/' . $f);
+    $fullPath = $baseDir . '/' . $f;
+    if (file_exists($fullPath)) {
+        $size = filesize($fullPath);
         echo "  <span class='ok'>✅ $f ($size bytes)</span>\n";
     } else {
         echo "  <span class='err'>❌ $f MISSING</span>\n";
