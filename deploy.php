@@ -59,7 +59,7 @@ if ($subfolder && is_dir($subfolder)) {
     
     $moved = 0;
     foreach ($files as $file) {
-        $dest = $baseDir . '/' . $file->getSubPathName();
+        $dest = $baseDir . '/' . $file->getSubPathname();
         if ($file->isDir()) {
             if (!is_dir($dest)) mkdir($dest, 0755, true);
         } else {
