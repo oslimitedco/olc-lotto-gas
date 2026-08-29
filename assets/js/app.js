@@ -220,16 +220,25 @@
 
     function resizeCanvas() {
         const rect = scratchCanvas.parentElement.getBoundingClientRect();
-        scratchCanvas.width = rect.width;
-        scratchCanvas.height = rect.height;
+        // Use offsetWidth/Height for better iOS compatibility
+        const w = rect.width || scratchCanvas.parentElement.offsetWidth;
+        const h = rect.height || scratchCanvas.parentElement.offsetHeight;
+        scratchCanvas.width = w;
+        scratchCanvas.height = h;
+        // Set CSS size explicitly for iOS
+        scratchCanvas.style.width = w + 'px';
+        scratchCanvas.style.height = h + 'px';
     }
 
     function getPos(e) {
         const rect = scratchCanvas.getBoundingClientRect();
         const touch = e.touches ? e.touches[0] : e;
+        // Scale coordinates for canvas resolution
+        const scaleX = scratchCanvas.width / rect.width;
+        const scaleY = scratchCanvas.height / rect.height;
         return {
-            x: touch.clientX - rect.left,
-            y: touch.clientY - rect.top
+            x: (touch.clientX - rect.left) * scaleX,
+            y: (touch.clientY - rect.top) * scaleY
         };
     }
 
