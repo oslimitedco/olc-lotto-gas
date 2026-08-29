@@ -239,7 +239,7 @@
         isScratching = true;
         const pos = getPos(e);
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2);
+        ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
         ctx.fill();
     }
 
@@ -248,7 +248,7 @@
         e.preventDefault();
         const pos = getPos(e);
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2);
+        ctx.arc(pos.x, pos.y, 40, 0, Math.PI * 2);
         ctx.fill();
         checkScratchProgress();
     }
@@ -270,8 +270,8 @@
 
         scratchPercentage = (transparent / total) * 100;
 
-        // Auto-reveal at 50% scratched
-        if (scratchPercentage > 50) {
+        // Auto-reveal at 40% scratched
+        if (scratchPercentage > 40) {
             revealPrize();
         }
     }

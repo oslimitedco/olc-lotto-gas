@@ -10,6 +10,9 @@
 </head>
 <body>
 
+<!-- ===== ADMIN QUICK ACCESS ===== -->
+<a href="admin/login.php" class="admin-float-btn" title="Admin Login">🔒</a>
+
 <!-- ===== NEON BACKGROUND EFFECTS ===== -->
 <div class="neon-bg">
     <div class="neon-glow glow-red"></div>

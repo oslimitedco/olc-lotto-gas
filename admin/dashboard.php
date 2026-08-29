@@ -15,15 +15,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'generate') {
         $count = intval($_POST['ticket_count'] ?? 0);
         $tier = $_POST['tier'] ?? '';
+        $custom_tickets = intval($_POST['custom_tickets'] ?? 0);
         
         $tierMap = [
             'spend_50' => 3,
             'spend_150' => 10,
             'spend_300' => 25,
-            'spend_500' => 50
+            'spend_500' => 50,
+            'custom' => $custom_tickets
         ];
 
-        if ($count > 0 && $count <= 1000 && isset($tierMap[$tier])) {
+        if ($count > 0 && $count <= 5000 && isset($tierMap[$tier])) {
             $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             $generated = 0;
             $stmt = $pdo->prepare("INSERT INTO tickets (code, tier, ticket_count) VALUES (?, ?, ?)");
@@ -118,11 +120,16 @@ $winners = $pdo->query("SELECT * FROM winners ORDER BY created_at DESC")->fetchA
                         <option value="spend_150">Spend $150 → 10 Tickets</option>
                         <option value="spend_300">Spend $300 → 25 Tickets</option>
                         <option value="spend_500">Spend $500 → 50 Tickets</option>
+                        <option value="custom">Custom Quantity</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Number of Codes</label>
-                    <input type="number" name="ticket_count" min="1" max="1000" value="10" required>
+                    <input type="number" name="ticket_count" min="1" max="5000" value="10" required>
+                </div>
+                <div class="form-group" id="customTicketsGroup" style="display:none">
+                    <label>Tickets Per Code</label>
+                    <input type="number" name="custom_tickets" min="1" max="10000" value="1" placeholder="e.g. 100">
                 </div>
                 <button type="submit" class="btn-generate">Generate</button>
             </div>
@@ -210,5 +217,13 @@ $winners = $pdo->query("SELECT * FROM winners ORDER BY created_at DESC")->fetchA
     <footer class="admin-footer">
         <p>© 2025 O'S Limited Collection. All rights reserved.</p>
     </footer>
+
+    <script>
+    // Show/hide custom tickets field
+    document.querySelector('select[name="tier"]').addEventListener('change', function() {
+        document.getElementById('customTicketsGroup').style.display = 
+            this.value === 'custom' ? 'block' : 'none';
+    });
+    </script>
 </body>
 </html>

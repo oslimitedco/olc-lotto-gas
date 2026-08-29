@@ -3,6 +3,33 @@
    Mobile-First Responsive Design
    ======================================== */
 
+/* --- ADMIN FLOAT BUTTON --- */
+.admin-float-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 999;
+    width: 44px;
+    height: 44px;
+    background: rgba(31,37,51,0.85);
+    border: 1px solid rgba(77,248,242,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    text-decoration: none;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+.admin-float-btn:hover {
+    border-color: var(--neon-gold);
+    box-shadow: 0 0 20px rgba(248,201,89,0.3);
+    transform: scale(1.1);
+}
+
 /* --- RESET & BASE --- */
 *, *::before, *::after {
     margin: 0;
@@ -348,16 +375,19 @@ body {
 .card-container {
     perspective: 1200px;
     width: 100%;
-    max-width: 380px;
+    max-width: 360px;
+    margin: 0 auto;
 }
 
 .flip-card {
     width: 100%;
-    aspect-ratio: 3/4;
+    max-width: 340px;
+    aspect-ratio: 2.5/4;
     position: relative;
     transform-style: preserve-3d;
     transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    margin: 0 auto;
 }
 
 .flip-card.flipped {
