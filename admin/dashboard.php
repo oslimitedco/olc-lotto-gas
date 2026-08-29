@@ -187,12 +187,10 @@ $winners = $pdo->query("SELECT * FROM winners ORDER BY created_at DESC")->fetchA
                     <tr>
                         <th>Ticket Code</th>
                         <th>Name</th>
-                        <th>Email</th>
-                        <th>Address</th>
                         <th>Phone</th>
-                        <th>Prize</th>
-                        <th>Claim Method</th>
-                        <th>Date</th>
+                        <th>Instagram</th>
+                        <th>Date of Birth</th>
+                        <th>Submitted</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -200,11 +198,9 @@ $winners = $pdo->query("SELECT * FROM winners ORDER BY created_at DESC")->fetchA
                     <tr>
                         <td class="code-cell"><?php echo htmlspecialchars($w['ticket_code']); ?></td>
                         <td><?php echo htmlspecialchars($w['full_name']); ?></td>
-                        <td><?php echo htmlspecialchars($w['email']); ?></td>
-                        <td><?php echo htmlspecialchars($w['address']); ?></td>
                         <td><?php echo htmlspecialchars($w['phone']); ?></td>
-                        <td><?php echo htmlspecialchars($w['prize']); ?></td>
-                        <td><?php echo htmlspecialchars($w['claim_method']); ?></td>
+                        <td><?php echo htmlspecialchars($w['ig_handle']); ?></td>
+                        <td><?php echo htmlspecialchars($w['dob']); ?></td>
                         <td><?php echo $w['created_at']; ?></td>
                     </tr>
                     <?php endforeach; ?>

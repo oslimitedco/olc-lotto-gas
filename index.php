@@ -98,40 +98,30 @@
         </div>
     </section>
 
-    <!-- WINNER FORM (shown on grand prize) -->
+    <!-- WINNER FORM -->
     <section id="winnerForm" class="winner-form-section hidden">
         <div class="winner-form-box">
-            <h2>🏆 Claim Your Prize</h2>
-            <p>Fill out the form below to claim your grand prize!</p>
+            <h2>🎉 You're a Winner!</h2>
+            <p>Fill out your info so we can reach you.</p>
             <form id="winnerFormEl">
                 <input type="hidden" id="winnerTicketCode">
-                <input type="hidden" id="winnerPrize">
                 <div class="form-group">
                     <label>Full Name</label>
                     <input type="text" id="winnerName" required>
-                </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" id="winnerEmail" required>
-                </div>
-                <div class="form-group">
-                    <label>Physical Address</label>
-                    <textarea id="winnerAddress" rows="3" required></textarea>
                 </div>
                 <div class="form-group">
                     <label>Phone Number</label>
                     <input type="tel" id="winnerPhone" required>
                 </div>
                 <div class="form-group">
-                    <label>Preferred Prize Claim Method</label>
-                    <select id="winnerClaim" required>
-                        <option value="">Select method...</option>
-                        <option value="pickup">In-Person Pickup</option>
-                        <option value="mail">Mail Delivery</option>
-                        <option value="etransfer">E-Transfer</option>
-                    </select>
+                    <label>Instagram Handle</label>
+                    <input type="text" id="winnerIG" placeholder="@yourusername" required>
                 </div>
-                <button type="submit" class="btn-neon btn-gold">SUBMIT CLAIM</button>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="winnerDOB" required>
+                </div>
+                <button type="submit" class="btn-neon btn-gold">SUBMIT MY INFO</button>
             </form>
             <div id="winnerMessage" class="winner-message"></div>
         </div>

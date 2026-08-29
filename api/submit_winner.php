@@ -1,7 +1,7 @@
 <?php
 /**
  * API: Submit winner information
- * POST: { ticket_code, full_name, email, address, phone, prize, claim_method }
+ * POST: { ticket_code, full_name, phone, ig_handle, dob }
  */
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$required = ['ticket_code', 'full_name', 'email', 'address', 'phone', 'prize', 'claim_method'];
+$required = ['ticket_code', 'full_name', 'phone', 'ig_handle', 'dob'];
 foreach ($required as $field) {
     if (empty($input[$field])) {
         echo json_encode(['error' => "Missing field: $field"]);
@@ -35,18 +35,16 @@ try {
         exit;
     }
 
-    $stmt = $pdo->prepare("INSERT INTO winners (ticket_code, full_name, email, address, phone, prize, claim_method) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO winners (ticket_code, full_name, phone, ig_handle, dob) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([
         strtoupper(trim($input['ticket_code'])),
         htmlspecialchars(trim($input['full_name'])),
-        filter_var(trim($input['email']), FILTER_VALIDATE_EMAIL),
-        htmlspecialchars(trim($input['address'])),
         htmlspecialchars(trim($input['phone'])),
-        htmlspecialchars(trim($input['prize'])),
-        htmlspecialchars(trim($input['claim_method']))
+        htmlspecialchars(trim($input['ig_handle'])),
+        htmlspecialchars(trim($input['dob']))
     ]);
 
-    echo json_encode(['success' => true, 'message' => 'Winner information submitted successfully']);
+    echo json_encode(['success' => true, 'message' => 'Information submitted successfully']);
 
 } catch (PDOException $e) {
     http_response_code(500);

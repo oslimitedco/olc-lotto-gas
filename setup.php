@@ -54,11 +54,9 @@ try {
         id INT AUTO_INCREMENT PRIMARY KEY,
         ticket_code VARCHAR(12) NOT NULL,
         full_name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        address TEXT NOT NULL,
         phone VARCHAR(50) NOT NULL,
-        prize VARCHAR(100) NOT NULL,
-        claim_method VARCHAR(100) NOT NULL,
+        ig_handle VARCHAR(100) NOT NULL,
+        dob DATE NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
     echo "✅ Winners table created\n";

@@ -35,32 +35,22 @@
     let currentTicketCode = '';
     let revealed = false;
 
-    // ===== PRIZE POOL =====
-    const PRIZES = [
-        { text: '$750 Cash Prize!', grand: true, emoji: '💰' },
-        { text: 'HP Laptop!', grand: true, emoji: '💻' },
-        { text: '$100 Gas Card', grand: false, emoji: '⛽' },
-        { text: '$50 Gas Card', grand: false, emoji: '⛽' },
-        { text: '$25 Gas Card', grand: false, emoji: '⛽' },
-        { text: 'Free Car Wash', grand: false, emoji: '🚗' },
-        { text: 'Better Luck Next Time', grand: false, emoji: '🤞' },
-        { text: 'Try Again', grand: false, emoji: '🔄' },
+    // ===== OUTCOME POOL =====
+    // Winner: 20.88% | 1 More Chance: 7.5% | Try Again: 69.62%
+    const OUTCOMES = [
+        { type: 'winner', emoji: '🎉', title: 'WINNER!', message: 'You are a winner! Fill out your info so we can reach you.' },
+        { type: 'chance', emoji: '🔄', title: '1 MORE CHANCE!', message: 'You get one more scratch! Enter a new code.' },
+        { type: 'lose', emoji: '❌', title: 'TRY AGAIN', message: 'No luck this time. Try another ticket!' },
     ];
 
-    // Weighted odds (1 in 3.5 overall win rate)
-    function pickPrize() {
+    function pickOutcome() {
         const rand = Math.random();
-        if (rand < 0.02) return PRIZES[0];      // 2% - $750
-        if (rand < 0.04) return PRIZES[1];      // 2% - HP
-        if (rand < 0.08) return PRIZES[2];      // 4% - $100
-        if (rand < 0.14) return PRIZES[3];      // 6% - $50
-        if (rand < 0.20) return PRIZES[4];      // 6% - $25
-        if (rand < 0.25) return PRIZES[5];      // 5% - Car Wash
-        if (rand < 0.285) return PRIZES[6];     // 3.5% - Better Luck
-        return PRIZES[7];                        // 71.5% - Try Again
+        if (rand < 0.2088) return OUTCOMES[0];   // 20.88% - Winner
+        if (rand < 0.2838) return OUTCOMES[1];   // 7.5% - 1 More Chance
+        return OUTCOMES[2];                       // 69.62% - Try Again
     }
 
-    let currentPrize = null;
+    let currentOutcome = null;
 
     // ===== AGE GATE =====
     ageYes.addEventListener('click', function() {
@@ -151,22 +141,16 @@
         isUnlocked = true;
         revealed = false;
 
-        // Remove lock overlay
         lockOverlay.classList.add('unlocked');
-
-        // Enable scratch canvas
         scratchCanvas.classList.remove('locked');
         scratchCanvas.classList.add('unlocked');
 
-        // Pick prize
-        currentPrize = pickPrize();
+        currentOutcome = pickOutcome();
 
-        // Flip to front if on back
         if (isFlipped) {
             flipBtn.click();
         }
 
-        // Initialize scratch canvas
         setTimeout(initScratchCanvas, 300);
     }
 
@@ -175,12 +159,12 @@
         ctx = scratchCanvas.getContext('2d');
         resizeCanvas();
 
-        // Fill with 100% opaque scratch-off coating
+        // 100% opaque scratch-off coating
         ctx.globalCompositeOperation = 'source-over';
         ctx.fillStyle = '#c4a265';
         ctx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
 
-        // Add subtle texture
+        // Subtle texture
         ctx.fillStyle = 'rgba(160,120,72,0.3)';
         for (let i = 0; i < 300; i++) {
             const x = Math.random() * scratchCanvas.width;
@@ -190,15 +174,15 @@
             ctx.fill();
         }
 
-        // Draw "SCRATCH HERE" text
+        // "SCRATCH HERE" text
         ctx.fillStyle = 'rgba(0,0,0,0.15)';
         ctx.font = 'bold 20px Orbitron, monospace';
         ctx.textAlign = 'center';
         ctx.fillText('SCRATCH HERE', scratchCanvas.width / 2, scratchCanvas.height / 2 - 10);
         ctx.font = '13px Inter, sans-serif';
-        ctx.fillText('Reveal your prize!', scratchCanvas.width / 2, scratchCanvas.height / 2 + 15);
+        ctx.fillText('Reveal your result!', scratchCanvas.width / 2, scratchCanvas.height / 2 + 15);
 
-        // Set composite for scratching (erases to transparent)
+        // Set composite for scratching
         ctx.globalCompositeOperation = 'destination-out';
 
         // Event listeners
@@ -270,7 +254,6 @@
 
         scratchPercentage = (transparent / total) * 100;
 
-        // Auto-reveal at 40% scratched
         if (scratchPercentage > 40) {
             revealPrize();
         }
@@ -280,14 +263,12 @@
         if (revealed) return;
         revealed = true;
 
-        // Remove canvas
         scratchCanvas.style.transition = 'opacity 0.4s';
         scratchCanvas.style.opacity = '0';
         setTimeout(() => {
             scratchCanvas.style.display = 'none';
         }, 400);
 
-        // Remove event listeners
         scratchCanvas.removeEventListener('mousedown', startScratch);
         scratchCanvas.removeEventListener('mousemove', scratch);
         scratchCanvas.removeEventListener('mouseup', endScratch);
@@ -295,95 +276,82 @@
         scratchCanvas.removeEventListener('touchmove', scratch);
         scratchCanvas.removeEventListener('touchend', endScratch);
 
-        // Show result popup after canvas fades
         setTimeout(showResultPopup, 500);
     }
 
     // ===== RESULT POPUP =====
     function showResultPopup() {
-        const isWinner = currentPrize.grand || !currentPrize.text.includes('Try Again') && !currentPrize.text.includes('Better Luck');
+        const isWinner = currentOutcome.type === 'winner';
+        const isChance = currentOutcome.type === 'chance';
 
-        // Create popup overlay
         const overlay = document.createElement('div');
         overlay.className = 'result-overlay';
-        overlay.innerHTML = `
-            <div class="result-modal ${isWinner ? 'result-win' : 'result-lose'}">
-                <div class="result-emoji">${currentPrize.emoji}</div>
-                <h2 class="result-title">${isWinner ? '🎉 CONGRATULATIONS!' : '😔 NOT THIS TIME'}</h2>
-                <p class="result-prize">${currentPrize.text}</p>
-                ${isWinner && currentPrize.grand ? '<p class="result-sub">Fill out the form below to claim your prize!</p>' : ''}
-                ${!isWinner ? '<p class="result-sub">Better luck on your next scratch!</p>' : ''}
-                <div class="result-buttons">
-                    ${isWinner && currentPrize.grand ? '<button class="btn-neon btn-gold result-claim-btn">CLAIM PRIZE</button>' : ''}
-                    <button class="btn-neon btn-cyan result-next-btn">NEXT TICKET</button>
-                </div>
-            </div>
-        `;
+        overlay.innerHTML =
+            '<div class="result-modal ' + (isWinner ? 'result-win' : 'result-lose') + '">' +
+                '<div class="result-emoji">' + currentOutcome.emoji + '</div>' +
+                '<h2 class="result-title">' + currentOutcome.title + '</h2>' +
+                '<p class="result-sub">' + currentOutcome.message + '</p>' +
+                '<div class="result-buttons">' +
+                    (isWinner ? '<button class="btn-neon btn-gold result-claim-btn">SUBMIT MY INFO</button>' : '') +
+                    (isChance ? '<button class="btn-neon btn-gold result-next-btn">ENTER NEW CODE</button>' : '') +
+                    (!isWinner && !isChance ? '<button class="btn-neon btn-cyan result-next-btn">NEXT TICKET</button>' : '') +
+                '</div>' +
+            '</div>';
 
         document.body.appendChild(overlay);
+        setTimeout(function() { overlay.classList.add('active'); }, 10);
 
-        // Animate in
-        setTimeout(() => overlay.classList.add('active'), 10);
-
-        // Button handlers
-        const claimBtn = overlay.querySelector('.result-claim-btn');
-        const nextBtn = overlay.querySelector('.result-next-btn');
+        var claimBtn = overlay.querySelector('.result-claim-btn');
+        var nextBtn = overlay.querySelector('.result-next-btn');
 
         if (claimBtn) {
             claimBtn.addEventListener('click', function() {
                 overlay.classList.remove('active');
-                setTimeout(() => {
+                setTimeout(function() {
                     overlay.remove();
-                    // Show winner form
                     winnerForm.classList.remove('hidden');
                     document.getElementById('winnerTicketCode').value = currentTicketCode;
-                    document.getElementById('winnerPrize').value = currentPrize.text;
                     winnerForm.scrollIntoView({ behavior: 'smooth' });
                 }, 300);
             });
         }
 
-        nextBtn.addEventListener('click', function() {
-            overlay.classList.remove('active');
-            setTimeout(() => {
-                overlay.remove();
-                resetForNextTicket();
-            }, 300);
-        });
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                overlay.classList.remove('active');
+                setTimeout(function() {
+                    overlay.remove();
+                    resetForNextTicket();
+                }, 300);
+            });
+        }
     }
 
     function resetForNextTicket() {
-        // Reset card state
         isUnlocked = false;
         isFlipped = false;
         revealed = false;
-        currentPrize = null;
+        currentOutcome = null;
         currentTicketCode = '';
         scratchPercentage = 0;
 
-        // Reset card flip
         flipCard.classList.remove('flipped');
         flipBtn.textContent = '↻ FLIP CARD';
 
-        // Reset lock overlay
         lockOverlay.classList.remove('unlocked');
 
-        // Reset canvas
         scratchCanvas.style.display = '';
         scratchCanvas.style.opacity = '';
         scratchCanvas.classList.remove('unlocked');
         scratchCanvas.classList.add('locked');
 
-        // Clear code input
         ticketCode.value = '';
         codeMessage.textContent = '';
         codeMessage.className = 'code-message';
 
-        // Hide winner form
         winnerForm.classList.add('hidden');
         winnerMessage.textContent = '';
 
-        // Scroll to code section
         document.getElementById('codeSection').scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -391,31 +359,29 @@
     winnerFormEl.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        const btn = this.querySelector('button[type="submit"]');
+        var btn = this.querySelector('button[type="submit"]');
         btn.disabled = true;
         btn.textContent = 'SUBMITTING...';
 
-        const data = {
+        var data = {
             ticket_code: document.getElementById('winnerTicketCode').value,
             full_name: document.getElementById('winnerName').value,
-            email: document.getElementById('winnerEmail').value,
-            address: document.getElementById('winnerAddress').value,
             phone: document.getElementById('winnerPhone').value,
-            prize: document.getElementById('winnerPrize').value,
-            claim_method: document.getElementById('winnerClaim').value
+            ig_handle: document.getElementById('winnerIG').value,
+            dob: document.getElementById('winnerDOB').value
         };
 
         try {
-            const response = await fetch('api/submit_winner.php', {
+            var response = await fetch('api/submit_winner.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
 
-            const result = await response.json();
+            var result = await response.json();
 
             if (result.success) {
-                winnerMessage.textContent = '✅ Claim submitted! We will contact you soon.';
+                winnerMessage.textContent = '✅ Info submitted! We will reach out to you soon.';
                 winnerMessage.className = 'winner-message success';
                 winnerFormEl.reset();
             } else {
@@ -428,7 +394,7 @@
         }
 
         btn.disabled = false;
-        btn.textContent = 'SUBMIT CLAIM';
+        btn.textContent = 'SUBMIT MY INFO';
     });
 
     // ===== INFO MODAL =====
